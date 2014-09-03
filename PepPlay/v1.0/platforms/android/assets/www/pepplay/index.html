@@ -1,0 +1,121 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Demo Play</title>
+	<link rel="stylesheet" href="assets/css/style.css">
+
+    <!-- Load local jQuery.  -->
+    <script src="libs/jquery.min.js"></script>
+    <script src="libs/modernizr.min.js"></script>
+
+    <!-- Load local lib and tests. -->
+    <script src="libs/jquery.pep.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            startorreplay();
+        });
+        var movedCount = 0, totalMoves = 0; totalCount = 26;
+        function startorreplay() {
+            
+            var drop = $(".section-droppable"), drag = $(".section-dragable"), dropelements = [], dragelements = [];
+
+            drop.html("");
+            drag.html("");
+
+            $(".move-tracker").html(movedCount + "/" + totalCount);
+
+            for (var i = 0; i < 26; i++) {
+                var char = String.fromCharCode(i + 65);
+                dropelements.push(char);
+                dragelements.push(char);
+            }
+
+            for (var i = 0; i < totalCount; i++) {
+                var random0 = Math.floor(Math.random() * dropelements.length);
+                var random = Math.floor(Math.random() * dragelements.length);
+
+                drop.append('<li><a href="#" class="icon-' + dropelements[random0] + '-drop"> ' + dropelements[random0] + '</a></li>');
+                dragEl = $('<li><a class="icon-' + dragelements[random] + '-drag" href="#"> ' + dragelements[random] + '</a></li>');
+                drag.append(dragEl);
+
+                var _offsets = drag.offset();
+                var dragEl = $('.icon-' + dragelements[random] + '-drag');
+
+                var left = 15 + i + (i * 0.75);
+                dragEl.css({
+                    position: 'absolute',
+                    left: left + '%',
+                    top: '10%',
+                });
+
+                $('.icon-' + dragelements[random] + '-drag').pep({
+                    droppable: ".icon-" + dragelements[random] + "-drop",
+                    revert: true,
+                    revertIf: function () {
+                        totalMoves++;
+                        if (this.activeDropRegions.length) {
+                            
+                            ++movedCount;
+
+                            /*
+                            var droppos = this.activeDropRegions[0].offset();
+                            var dragpos = this.$el.offset();
+
+                            if ((droppos.left + 5 >= dragpos.left || droppos.left - 5 <= dragpos.left)
+                                &&
+                                (droppos.top + 5 >= dragpos.top || droppos.top - 5 >= dragpos.top)
+                               ) {
+
+                                this.activeDropRegions[0].addClass('success');
+                                this.$el.fadeOut();
+                                return false;
+                            }
+                            */
+
+                            this.activeDropRegions[0].addClass('success');
+                            this.$el.fadeOut();
+                            $(".move-tracker").html(movedCount + "/" + totalCount);
+                            return false;
+                        }
+                        return true;
+                    },
+                    drag: function (ev, obj) {
+                        //Monitor moving x and y
+                    }
+                });
+
+                dragelements.splice(random, 1);
+                dropelements.splice(random0, 1);
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <div class="page-wrap">
+        <nav>
+            <ul class="section-header"  >
+                <li><a class="actions">MOVES:  <span class="move-tracker">0/26</span></a></li>
+                <li><a href="javascript:startorreplay();" class="actions">REPLAY</a></li>
+            </ul>
+        </nav>
+
+        <nav>
+            <ul class="nav section-droppable">
+            </ul>
+		</nav>
+
+        <nav>
+            <ul class="nav section-dragable">
+            </ul>
+        </nav>
+
+        <footer style="position:absolute; top:95%; left: 45%;">
+            &copy; PepPlay Demo 
+        </footer>
+	</div>
+</body>
+</html>
